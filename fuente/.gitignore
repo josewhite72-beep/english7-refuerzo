@@ -1,0 +1,7 @@
+audio/
+qr/
+out/
+site/
+tts-model/
+node_modules/
+__pycache__/
