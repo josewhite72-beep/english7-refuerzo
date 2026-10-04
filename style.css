@@ -1,0 +1,19 @@
+
+:root{--bg:#fbfaf7;--ink:#1d1d1f;--muted:#5b5b60;--line:#d9d6cf;--card:#fff;--accent:#1f5f8b;--accent-ink:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--ink:#f2f1ee;--muted:#a9a8a3;--line:#33333a;--card:#1d1d21;--accent:#7fb6dc;--accent-ink:#0d1b24}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
+.kicker{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-size:26px;line-height:1.2;margin:4px 0 6px}h2{font-size:18px;margin:28px 0 8px}
+.instr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0}
+.play{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:64px;border:0;border-radius:14px;background:var(--accent);color:var(--accent-ink);font-size:20px;font-weight:700;cursor:pointer}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.btn{min-height:52px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-size:16px;font-weight:600;cursor:pointer}
+.btn[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.bar{height:8px;background:var(--line);border-radius:4px;margin:14px 0 4px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent)}
+.time{font-size:14px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+details{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+summary{cursor:pointer;font-weight:600}details p{margin:8px 0}
+ul.tracks{list-style:none;padding:0;margin:0}ul.tracks a{display:flex;gap:12px;align-items:baseline;padding:12px 4px;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
+ul.tracks b{color:var(--accent);min-width:64px}
+.foot{margin-top:36px;font-size:13px;color:var(--muted)}a{color:var(--accent)}
