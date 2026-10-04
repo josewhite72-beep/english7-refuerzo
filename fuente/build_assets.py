@@ -58,6 +58,8 @@ def transcript(track, speakers):
     return lines
 
 def main():
+    for d in ("qr", "out", "audio"):
+        os.makedirs(os.path.join(ROOT, d), exist_ok=True)
     kokoro = None
     if not os.environ.get("NO_AUDIO"):
         from kokoro_onnx import Kokoro
