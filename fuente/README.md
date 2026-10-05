@@ -14,7 +14,9 @@ Vercel no la publica (ver `.vercelignore` en la raíz del repositorio).
 | `content/common.py` | Funciones compartidas para escribir los temas. |
 | `build_assets.py` | Genera los MP3 (voz Kokoro, normal y lenta), los QR y `out/book.json`. Incluye la lista `NAMES` con la pronunciación en español de nombres y lugares. |
 | `build_docx.js` | Arma el Word a partir de `out/book.json`. |
-| `build_site.py` | Arma la página de audios en `site/`. |
+| `content/tests_t11.py` … `tests_t22.py` | Los 20 mini-tests como datos: preguntas, respuestas, variantes aceptadas, explicaciones y listas de cotejo. **El libro y la versión en línea salen de aquí**: si corriges un mini-test, se corrige en los dos. |
+| `web/tests.js`, `web/tests.css` | La versión en línea de los mini-tests (`tests.html`): se corrigen solos, guardan el progreso en el dispositivo y graban la voz en Speaking. |
+| `build_site.py` | Arma la página en `site/`: audios, mini-tests en línea, enlaces de los QR `/test/…` y el zip para usar sin internet (`descargar/english7-refuerzo.zip`). |
 
 ## Cómo corregir algo
 
@@ -22,7 +24,7 @@ Vercel no la publica (ver `.vercelignore` en la raíz del repositorio).
 - **Un audio:** edita el texto en `TRACKS` del tema, borra ese MP3 (normal y `-slow`) y corre `build_assets.py`: solo se regeneran los que faltan.
 - **La pronunciación de un nombre:** agrégalo a `NAMES` en `build_assets.py` (en IPA) y regenera los audios donde aparece.
 
-**No cambies los números de pista ni la dirección `SITE`:** están impresos en los QR.
+**No cambies los números de pista, los nombres de los mini-tests (`listening`, `reading`…) ni la dirección `SITE`:** están impresos en los QR.
 
 ## Cómo regenerar (requiere computadora o una sesión de Claude)
 

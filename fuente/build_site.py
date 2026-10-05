@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Genera la página estática de audios (site/) para GitHub + Vercel. Sin build."""
-import json, os, re, shutil, html
+import json, os, re, shutil, html, zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, "site")
@@ -12,8 +12,8 @@ def md(t):  # **negrita** y *cursiva* -> HTML
     return re.sub(r"\*(.+?)\*", r"<i>\1</i>", t)
 
 CSS = """
-:root{--bg:#fbfaf7;--ink:#1d1d1f;--muted:#5b5b60;--line:#d9d6cf;--card:#fff;--accent:#1f5f8b;--accent-ink:#fff}
-@media (prefers-color-scheme:dark){:root{--bg:#141416;--ink:#f2f1ee;--muted:#a9a8a3;--line:#33333a;--card:#1d1d21;--accent:#7fb6dc;--accent-ink:#0d1b24}}
+:root{--bg:#fbfaf7;--ink:#1d1d1f;--muted:#5b5b60;--line:#d9d6cf;--card:#fff;--accent:#1f5f8b;--accent-ink:#fff;--good:#2e7d32;--warn:#a15c00;--bad:#c62828;--hl:#fff3c4}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--ink:#f2f1ee;--muted:#a9a8a3;--line:#33333a;--card:#1d1d21;--accent:#7fb6dc;--accent-ink:#0d1b24;--good:#7cc985;--warn:#e0a85a;--bad:#ef8a8a;--hl:#4a3f12}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
 .kicker{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
@@ -30,6 +30,7 @@ summary{cursor:pointer;font-weight:600}details p{margin:8px 0}
 ul.tracks{list-style:none;padding:0;margin:0}ul.tracks a{display:flex;gap:12px;align-items:baseline;padding:12px 4px;border-bottom:1px solid var(--line);color:var(--ink);text-decoration:none}
 ul.tracks b{color:var(--accent);min-width:64px}
 .foot{margin-top:36px;font-size:13px;color:var(--muted)}a{color:var(--accent)}
+.cta{display:block;margin:18px 0 6px;padding:14px 16px;border-radius:14px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700}.cta span{display:block;font-weight:400;font-size:14px;opacity:.9}
 """
 
 PLAYER_JS = """
@@ -42,7 +43,7 @@ a.onloadedmetadata=a.ontimeupdate=()=>{bar.style.width=(a.currentTime/a.duration
 document.getElementById('restart').onclick=()=>{a.currentTime=0;a.play()};
 document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{if(b.dataset.speed===mode)return;mode=b.dataset.speed;
  document.querySelectorAll('[data-speed]').forEach(x=>x.setAttribute('aria-pressed',x===b));const was=!a.paused;a.src=src[mode];a.load();if(was)a.play()});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('../sw.js');
 """
 
 SW_JS = """// Guarda lo que el estudiante ya abrió para poder escucharlo sin internet
@@ -54,11 +55,14 @@ self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
  catch(err){const m=await c.match(e.request,{ignoreSearch:true});if(m)return m;throw err}}))});
 """
 
-def page(title, body, depth):
+def page(title, body, depth, extra_css="", main_cls="", foot=True):
+    up = "../" * depth
+    css = f'<link rel="stylesheet" href="{up}style.css">' + (f'<link rel="stylesheet" href="{up}{extra_css}">' if extra_css else "")
+    ft = f'<p class="foot">English 7 · Libro de refuerzo · I Trimestre — <a href="{up}index.html">Audios</a> · <a href="{up}tests.html">Mini-tests en línea</a></p>' if foot else ""
     return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>{html.escape(title)}</title>
-<link rel="stylesheet" href="/style.css"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#1f5f8b"></head>
-<body><main>{body}<p class="foot">English 7 · Libro de refuerzo · I Trimestre — <a href="/">Todos los audios</a></p></main></body></html>"""
+{css}<link rel="manifest" href="{up}manifest.json"><meta name="theme-color" content="#1f5f8b"></head>
+<body><main class="{main_cls}">{body}{ft}</main></body></html>"""
 
 def main():
     if os.path.exists(SITE): shutil.rmtree(SITE)
@@ -81,24 +85,58 @@ def main():
         body = f"""<p class="kicker">{html.escape(tr['scenario'])} · Theme {theme.split('-')[1]}</p>
 <h1>{label}<br>{html.escape(tr['title'])}</h1>
 <div class="instr">{md(tr['instr'])}</div>
-<audio id="a" preload="metadata" src="/audio/{theme}/{n}.mp3" data-normal="/audio/{theme}/{n}.mp3" data-slow="/audio/{theme}/{n}-slow.mp3"></audio>
+<audio id="a" preload="metadata" src="../audio/{theme}/{n}.mp3" data-normal="../audio/{theme}/{n}.mp3" data-slow="../audio/{theme}/{n}-slow.mp3"></audio>
 <button class="play" id="play">▶  Reproducir</button>
 <div class="bar"><i></i></div><div class="time" id="tm">0:00</div>
 <div class="row"><button class="btn" data-speed="normal" aria-pressed="true">Velocidad normal</button><button class="btn" data-speed="slow" aria-pressed="false">Velocidad lenta</button></div>
 <div class="row"><button class="btn" id="restart" style="grid-column:1/-1">↺  Escuchar desde el inicio</button></div>
 <details><summary>Ver el texto del audio</summary><p><i>Ábrelo solo después de responder.</i></p>{''.join(f'<p>{md(l)}</p>' for l in tr['transcript'])}</details>
-<script src="/player.js"></script>"""
+<script src="../player.js"></script>"""
         d = os.path.join(SITE, theme); os.makedirs(d, exist_ok=True)
-        open(os.path.join(d, f"{n}.html"), "w", encoding="utf-8").write(page(f"{label} · {tr['title']}", body, 2))
+        open(os.path.join(d, f"{n}.html"), "w", encoding="utf-8").write(page(f"{label} · {tr['title']}", body, 1))
     idx = ['<p class="kicker">English 7 · Libro de refuerzo · I Trimestre</p><h1>Audios del libro</h1>',
-           '<p>Escanea el código QR de tu libro o elige el audio aquí.</p>']
+           '<p>Escanea el código QR de tu libro o elige el audio aquí.</p>',
+           '<a class="cta" href="tests.html">Mini-tests en línea<span>Los 20 mini-tests del libro: se corrigen solos y te explican cada respuesta.</span></a>']
     for theme, th in sorted(themes.items()):
         idx.append(f"<h2>{html.escape(th['scenario'])}<br>Theme {theme.split('-')[1]}: {html.escape(th['title'])}</h2><ul class='tracks'>")
         for n, tr in th["tracks"]:
-            idx.append(f"<li><a href='/{theme}/{n}'><b>{theme.replace('-', '.')}-{n}</b><span>{html.escape(tr['title'])}</span></a></li>")
+            idx.append(f"<li><a href='{theme}/{n}.html'><b>{theme.replace('-', '.')}-{n}</b><span>{html.escape(tr['title'])}</span></a></li>")
         idx.append("</ul>")
-    idx.append("<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js')</script>")
+    idx.append("<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js')</script>")
     open(os.path.join(SITE, "index.html"), "w", encoding="utf-8").write(page("English 7 · Audios", "".join(idx), 0))
-    print("site ok:", sum(len(t["tracks"]) for t in themes.values()), "pistas")
+    build_tests()
+    build_zip()
+    print("site ok:", sum(len(t["tracks"]) for t in themes.values()), "pistas,", sum(len(t["tests"]) for t in book["tests"].values()), "mini-tests")
+
+def build_tests():
+    web = os.path.join(ROOT, "web")
+    shutil.copy(os.path.join(web, "tests.js"), SITE)
+    shutil.copy(os.path.join(web, "tests.css"), SITE)
+    with open(os.path.join(SITE, "tests-data.js"), "w", encoding="utf-8") as f:
+        f.write("window.TESTS = " + json.dumps(book["tests"], ensure_ascii=False) + ";\n")
+    body = '<div id="app"><p>Cargando…</p></div><noscript>Activa JavaScript para usar los mini-tests.</noscript><script src="tests-data.js"></script><script src="tests.js"></script>'
+    open(os.path.join(SITE, "tests.html"), "w", encoding="utf-8").write(page("Mini-tests en línea · English 7", body, 0, "tests.css", "wide"))
+    for theme, th in book["tests"].items():
+        d = os.path.join(SITE, "test", theme); os.makedirs(d, exist_ok=True)
+        for sk in th["tests"]:
+            url = f"../../tests.html#{theme}/{sk}"
+            open(os.path.join(d, f"{sk}.html"), "w", encoding="utf-8").write(
+                f'<!doctype html><html lang="es"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url={url}">'
+                f'<title>Mini-test</title><script>location.replace("{url}")</script></head><body><a href="{url}">Abrir el mini-test</a></body></html>')
+
+def build_zip():
+    d = os.path.join(SITE, "descargar"); os.makedirs(d, exist_ok=True)
+    leeme = ("ENGLISH 7 · LIBRO DE REFUERZO · I TRIMESTRE\r\n\r\n"
+             "1. Descomprime esta carpeta (clic derecho > Extraer todo).\r\n"
+             "2. Abre el archivo index.html (audios) o tests.html (mini-tests).\r\n"
+             "3. Funciona sin internet. Tu progreso se guarda en este navegador.\r\n")
+    with zipfile.ZipFile(os.path.join(d, "english7-refuerzo.zip"), "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("english7-refuerzo/LEEME.txt", leeme)
+        for base, _, files in os.walk(SITE):
+            rel = os.path.relpath(base, SITE)
+            if rel.split(os.sep)[0] in ("descargar", "test"): continue
+            for fn in files:
+                if fn in ("vercel.json", "README.md", "sw.js", "manifest.json"): continue
+                z.write(os.path.join(base, fn), os.path.join("english7-refuerzo", rel, fn) if rel != "." else os.path.join("english7-refuerzo", fn))
 
 main()

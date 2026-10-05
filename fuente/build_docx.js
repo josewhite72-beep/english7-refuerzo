@@ -102,6 +102,19 @@ function render(b, next) {
       return [new Table({ width: { size: CONTENT_W, type: WidthType.DXA }, columnWidths: [qrW, txtW],
         rows: [new TableRow({ cantSplit: true, children: [qrCell, txtCell] })] }), new Paragraph({ spacing: { after: 140 }, children: [] })];
     }
+    case "online": {
+      const [theme, skill] = b.id.split("/");
+      const png = fs.readFileSync(path.join(ROOT, "qr", `test-${theme}-${skill}.png`));
+      const qrW = 1300, txtW = CONTENT_W - qrW;
+      const qrCell = cell([new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ type: "png", data: png, transformation: { width: 70, height: 70 } })] })], qrW, { verticalAlign: VerticalAlign.CENTER });
+      const txtCell = cell([
+        P("HAZ ESTE MINI-TEST TAMBIÉN EN LÍNEA", { run: { bold: true, size: 21 }, spacing: { after: 30 } }),
+        P("En línea se corrige solo y te explica cada respuesta.", { run: { size: 19 }, spacing: { after: 30 } }),
+        P(`Escanea el código o escribe: **${book.site}/test/${theme}/${skill}**`, { run: { size: 19 }, spacing: { after: 0 } }),
+      ], txtW, { verticalAlign: VerticalAlign.CENTER });
+      return [new Table({ width: { size: CONTENT_W, type: WidthType.DXA }, columnWidths: [qrW, txtW],
+        rows: [new TableRow({ cantSplit: true, children: [qrCell, txtCell] })] })];
+    }
     case "table": {
       const total = b.widths.reduce((a, c) => a + c, 0);
       const head = new TableRow({ tableHeader: true, cantSplit: true, children: b.header.map((h, i) => cell([P(h, { run: { bold: true }, spacing: { after: 0 } })], b.widths[i])) });

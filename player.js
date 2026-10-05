@@ -8,4 +8,4 @@ a.onloadedmetadata=a.ontimeupdate=()=>{bar.style.width=(a.currentTime/a.duration
 document.getElementById('restart').onclick=()=>{a.currentTime=0;a.play()};
 document.querySelectorAll('[data-speed]').forEach(b=>b.onclick=()=>{if(b.dataset.speed===mode)return;mode=b.dataset.speed;
  document.querySelectorAll('[data-speed]').forEach(x=>x.setAttribute('aria-pressed',x===b));const was=!a.paused;a.src=src[mode];a.load();if(was)a.play()});
-if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('../sw.js');

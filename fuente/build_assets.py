@@ -11,9 +11,10 @@ SITE = front.SITE
 SPEAKERS = {"af_bella": "Sofía", "am_michael": "Mateo", "am_fenrir": "Kevin"}
 TTS_DIR = os.environ.get("TTS_DIR", os.path.join(ROOT, "tts-model"))
 
-def make_qr(theme_id, n):
-    path = os.path.join(ROOT, "qr", f"{theme_id}-{n}.png")
-    img = qrcode.make(f"https://{SITE}/{theme_id}/{n}", box_size=10, border=2,
+def make_qr(theme_id, n, prefix=""):
+    path = os.path.join(ROOT, "qr", f"{prefix}{theme_id}-{n}.png")
+    url = f"https://{SITE}/test/{theme_id}/{n}" if prefix else f"https://{SITE}/{theme_id}/{n}"
+    img = qrcode.make(url, box_size=10, border=2,
                       error_correction=qrcode.constants.ERROR_CORRECT_M)
     img.save(path)
     return path
@@ -64,7 +65,8 @@ def main():
     if not os.environ.get("NO_AUDIO"):
         from kokoro_onnx import Kokoro
         kokoro = Kokoro(os.path.join(TTS_DIR, "kokoro.onnx"), os.path.join(TTS_DIR, "voices.bin"))
-    book = {"site": SITE, "blocks": list(front.BLOCKS), "tracks": {}}
+    book = {"site": SITE, "blocks": list(front.BLOCKS), "tracks": {}, "tests": {}}
+    titles = {v: k for k, v in __import__("common").SKILL_TITLES.items()}
     for th in MODULES:
         spk = getattr(th, "SPEAKERS", SPEAKERS)
         for tr in getattr(th, "TRACKS", []):
@@ -74,7 +76,17 @@ def main():
             book["tracks"][key] = {"title": tr["title"], "instr": tr["instr"], "theme": th.THEME_ID,
                                    "theme_title": th.THEME_TITLE, "scenario": th.SCENARIO,
                                    "transcript": transcript(tr, spk)}
+        if getattr(th, "TESTS", None):
+            book["tests"][th.THEME_ID] = {"title": th.THEME_TITLE, "scenario": th.SCENARIO, "tests": th.TESTS}
+        skill = None
         for b in th.BLOCKS:
+            if b.get("t") == "h2" and b.get("text") in titles:
+                skill = titles[b["text"]]
+            if b.get("t") == "score" and skill and getattr(th, "TESTS", None):
+                book["blocks"].append(b)
+                make_qr(th.THEME_ID, skill, prefix="test-")
+                b = {"t": "online", "id": f"{th.THEME_ID}/{skill}"}
+                skill = None
             if b.get("t") == "transcripts":
                 b = {"t": "transcripts", "items": [
                     {"label": f"Audio {th.THEME_ID.replace('-', '.')}-{tr['n']} · {tr['title']}",

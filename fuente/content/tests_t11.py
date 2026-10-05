@@ -1,0 +1,105 @@
+# -*- coding: utf-8 -*-
+"""Mini-tests del Tema 1.1 (fuente única para el libro y la versión en línea)."""
+from common import *
+
+TESTS = {
+ "listening": {"skill": "listening", "total": 6,
+  "tip": ["Antes de escuchar, **lee todas las preguntas**. Así sabes qué información buscar.",
+          "Cuidado con las trampas: a veces el audio menciona **dos lugares** o **dos números**. Escucha cuál responde la pregunta."],
+  "review": "Vocabulario (audio 01) y la práctica con el audio 04 en velocidad lenta",
+  "parts": [{"intro": "Escucha a Kevin, un estudiante nuevo, presentándose a su clase. Puedes escuchar **dos veces como máximo**, como en una prueba real.",
+             "audio": "05", "qs": [
+    {"t": "mc", "q": "Kevin is ______ years old.", "opts": ["12", "13", "30"], "a": 1,
+     "exp": "Kevin dice *thirteen* (13). Cuidado: *thirty* (30) suena parecido, pero lleva el acento al inicio: THIR-ty. *Thirteen* lleva el acento al final: thir-TEEN."},
+    {"t": "mc", "q": "Where is Kevin from?", "opts": ["Santiago", "Veraguas", "Bocas del Toro"], "a": 2,
+     "exp": "Kevin dice *I'm from Bocas del Toro*. Santiago es donde **vive ahora** (*Now I live in Santiago*). Es una trampa típica: dos lugares en el audio, pero solo uno responde *Where is he from?*"},
+    {"t": "mc", "q": "How does Kevin go to school now?", "opts": ["He walks.", "He takes the bus.", "His dad drives him."], "a": 1,
+     "exp": "En Bocas caminaba a la escuela, pero la pregunta dice **now** (ahora)."},
+    {"t": "mc", "q": "Classes start at:", "opts": ["7:00", "7:30", "10:00"], "a": 1,
+     "exp": "*Seven thirty* = 7:30. El número 10 es la hora del recreo."},
+    {"t": "tf", "q": "Kevin's favorite subject is Math.", "a": False, "exp": "Su asignatura favorita es *Science*."},
+    {"t": "tf", "q": "Kevin's classmates are friendly.", "a": True, "exp": "*My classmates are very friendly.*"},
+  ]}]},
+
+ "reading": {"skill": "reading", "total": 6,
+  "tip": ["Lee primero las preguntas y luego el texto. **Subraya** en el texto la parte donde está cada respuesta.",
+          "En True / False, una sola palabra puede cambiar todo: lee con calma palabras como **don't, now, yet**."],
+  "review": "La lectura *Meet Sofía* y el Consejo para la prueba de Reading",
+  "parts": [{"intro": "Lee el mensaje que Valeria le escribe a su amiga Ana y responde.",
+             "reading": {"title": "A Message from Valeria", "paras": [
+                "Hi, Ana!",
+                "How are you? I'm happy here in my new school in La Chorrera. My classroom is big, and my teacher, Mr. Pérez, is very kind. I have six subjects. My favorite is Art because I love painting.",
+                "My classmate Lucía comes from Darién. She speaks Spanish and Emberá! At recess, we eat empanadas in the cafeteria. On Thursdays, our class goes to the library.",
+                "I don't have a uniform yet, so I wear a white T-shirt. Do you still play volleyball in our hometown? Write soon!",
+                "Your friend, Valeria"]},
+             "qs": [
+    {"t": "mc", "q": "Who writes the message?", "opts": ["Ana", "Valeria", "Lucía"], "a": 1,
+     "exp": "Firma al final: *Your friend, Valeria*. Ana es quien **recibe** el mensaje."},
+    {"t": "short", "q": "Where is Valeria's new school? ______________________",
+     "accept": [["la chorrera", "in la chorrera", "it is in la chorrera", "it's in la chorrera"]], "show": "**In La Chorrera.**"},
+    {"t": "short", "q": "Valeria's favorite subject is __________ because __________________________.",
+     "accept": [["art"], ["she loves painting", "she love painting", "~lov paint"]], "show": "**Art** because **she loves painting**.",
+     "exp": "(Las dos partes correctas valen 1 punto.)"},
+    {"t": "tf", "q": "Lucía is from Darién.", "a": True, "exp": "*Lucía comes from Darién.*"},
+    {"t": "tf", "q": "Valeria wears a uniform now.", "a": False, "exp": "*I don't have a uniform **yet***: todavía no tiene uniforme."},
+    {"t": "mc", "q": "What does the class do on Thursdays?", "opts": ["They eat empanadas.", "They go to the library.", "They play volleyball."], "a": 1,
+     "exp": "Las empanadas son en el recreo, no los jueves."},
+  ]}]},
+
+ "writing": {"skill": "writing", "total": 10,
+  "tip": ["Cuando termines de escribir, revisa **tres cosas**: la -s con he/she, la mayúscula al inicio y el punto al final."],
+  "review": "Gramática B: la -s con he/she y el error común con doesn't",
+  "parts": [
+   {"intro": "**Parte A. Cada oración tiene un error. Escríbela correctamente.** (1 punto cada una)", "qs": [
+    {"t": "fix", "q": "She come from Colón.", "accept": ["she comes from colon"], "show": "She **comes** from Colón.", "exp": "con she, el verbo lleva -s"},
+    {"t": "fix", "q": "My classmate watchs TV every day.", "accept": ["my classmate watches tv every day"], "show": "My classmate **watches** TV every day.", "exp": "watch + es"},
+    {"t": "fix", "q": "Where you are from?", "accept": ["where are you from"], "show": "Where **are you** from?", "exp": "en preguntas, *are* va antes de *you*"},
+    {"t": "fix", "q": "He don't like Science.", "accept": ["he doesnt like science", "he does not like science"], "show": "He **doesn't** like Science.", "exp": "con he se usa *doesn't*, no *don't*"},
+    {"t": "fix", "q": "Does she plays soccer?", "accept": ["does she play soccer"], "show": "Does she **play** soccer?", "exp": "después de *does*, el verbo va sin -s"},
+   ]},
+   {"intro": "**Parte B. Responde el mensaje de Kevin** con 3 a 5 oraciones. (5 puntos)",
+    "note": ["Mensaje de Kevin", "*Hi! I'm Kevin, your new classmate. Where are you from? What's your favorite subject? What do you do at recess?*"],
+    "open": {"lines": 5, "min_sent": 3, "max_sent": 5, "check_intro": "**Revisa tu respuesta.** Marca un punto por cada casilla que cumpliste:",
+             "checklist": [
+               {"text": "Empecé con un saludo (*Hi, Kevin!*).", "auto": r"^\s*(hi|hello|hey|dear)\b"},
+               {"text": "Dije de dónde soy (*I'm from...*).", "auto": r"\b(i'?m|i am) from\b|\bi come from\b"},
+               {"text": "Dije mi asignatura favorita y por qué (*because...*).", "auto": r"\bfavou?rite subject\b.*\bbecause\b"},
+               {"text": "Usé el presente simple para mi recreo (*I play / I eat...*).", "auto": r"\bat recess\b|\brecess\b"},
+               {"text": "Cada oración empieza con mayúscula y termina con punto.", "auto": "caps"}],
+             "sample": "Hi, Kevin! I'm from Penonomé, in Coclé. My favorite subject is English because I like music. At recess, I play soccer with my classmates. See you!"}},
+  ]},
+
+ "speaking": {"skill": "speaking", "total": 8,
+  "tip": ["Responde siempre con **oración completa**: no solo *Coclé*, sino *I'm from Coclé.*",
+          "Si no sabes una palabra, no te detengas: di la idea con palabras que sí conoces."],
+  "review": "Audio 06: escucha, repite y grábate otra vez",
+  "parts": [{"intro": "Activa la grabadora de tu celular y luego reproduce el audio. Escucharás 5 preguntas; responde cada una en voz alta **durante la pausa**.",
+             "audio": "07",
+             "open": {"record": True, "check_intro": "Después, escucha tu grabación y marca un punto por cada casilla:", "checklist": [
+               {"text": "Pregunta 1 con oración completa"}, {"text": "Pregunta 2 con oración completa"},
+               {"text": "Pregunta 3 con oración completa y *because*"}, {"text": "Pregunta 4 con oración completa"},
+               {"text": "Pregunta 5: usé **comes** o **is from** (con -s)"}, {"text": "Pronuncié la -s final en las palabras que la llevan"},
+               {"text": "Hablé sin leer"}, {"text": "No usé español"}]}}]},
+
+ "mediation": {"skill": "mediation", "total": 8,
+  "tip": ["Para simplificar: quédate con **quién, qué y cuándo**. Borra lo demás y usa oraciones cortas."],
+  "review": "El Consejo de Mediation: quién, qué y cuándo",
+  "parts": [
+   {"intro": "**Parte A.** Tu profesora dejó esta nota en español. Escríbele a Kevin, que solo habla inglés, un mensaje de **2 o 3 oraciones simples**.",
+    "note": ["Nota de la profesora", "Mañana no hay clase de Educación Física. Traigan su libro de inglés y un diccionario."],
+    "open": {"lines": 3, "min_sent": 2, "max_sent": 3, "checklist": [
+      {"text": "Dije que no hay Educación Física (*no P.E. class*).", "auto": r"\b(no|isn'?t|is not|there'?s no)\b.*\b(p\.?\s?e\.?|physical education|sports?)\b"},
+      {"text": "Dije **mañana** (*tomorrow*).", "auto": r"\btomorrow\b"},
+      {"text": "Mencioné el libro de inglés.", "auto": r"\benglish book\b|\bbook\b"},
+      {"text": "Mencioné el diccionario.", "auto": r"\bdictionar(y|ies)\b"},
+      {"text": "Usé oraciones cortas y claras."}],
+     "sample": "Hi, Kevin! Tomorrow there is no P.E. class. Bring your English book and a dictionary."}},
+   {"intro": "**Parte B.** Simplifica este mensaje en **1 o 2 oraciones** para un compañero nuevo.",
+    "note": ["Mensaje", "*Students who come from other schools must bring a copy of their old report card to the office before Friday.*"],
+    "open": {"lines": 2, "min_sent": 1, "max_sent": 2, "checklist": [
+      {"text": "Dije **quién** (*new students*).", "auto": r"\bnew students?\b|\bstudents? from other schools\b"},
+      {"text": "Dije **qué** traer y **a dónde**.", "auto": r"\breport card\b.*\boffice\b|\boffice\b.*\breport card\b"},
+      {"text": "Dije **cuándo** (*before Friday*).", "auto": r"\bfriday\b"}],
+     "sample": "New students: bring your old report card to the office before Friday."}},
+  ]},
+}
